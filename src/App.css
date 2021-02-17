@@ -1,38 +1,107 @@
-.App {
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  font-family: "Open Sans", sans-serif;
+  background-color: #141414;
+  color: #fff;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.root {
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+
+header {
+  background-color: #141414;
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.search {
+  background-color: transparent;
+  font-family: inherit;
+  font-size: 1.2rem;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+}
+
+.search :focus {
+  outline: 0;
+}
+
+.movie-container {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-wrap: wrap;
 }
 
-.App-link {
-  color: #61dafb;
+.movie {
+  background-color: #2e2e2e;
+  border-radius: 3px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 1rem;
+  width: 300px;
+  position: relative;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.movie img {
+  object-fit: cover;
+  height: 450px;
+  width: 100%;
+}
+
+.movie-info {
+  display: flex;
+  padding: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.movie-info h3 {
+  margin: 0;
+}
+
+.movie-overview {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: #696969;
+  color: #fff;
+  padding: 1rem;
+  transform: translateY(102%);
+  transition: transform 0.3s ease-in-out;
+  overflow: auto;
+  max-height: 100%;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.movie:hover .movie-overview {
+  transform: translateY(0%);
+}
+
+.tag {
+  background-color: #141414;
+  padding: 0.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.tag.green {
+  color: rgb(90, 216, 90);
+}
+.tag.orange {
+  color: orange;
+}
+.tag.red {
+  color: red;
 }
