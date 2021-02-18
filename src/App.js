@@ -11,7 +11,8 @@ function App() {
 
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState([]);
+  const [cart, setCart] = useState([]);
 
   useEffect(async () => {
     getMovies(MOVIE_API)
@@ -35,8 +36,29 @@ function App() {
     setSearchTerm(e.target.value);
   }
 
-  const NewPrice = (e) => {
-    setPrice(e.target.value);
+  const NewPriceHandler = (i, e) => {
+    const newPrice = e.target.value
+    console.log(newPrice);
+    // setPrice((oldPrice, i) => {
+    //   console.log(oldPrice);
+    //   if (i === i) {
+    //     console.log(newPrice);
+    //     return newPrice;
+    //   }
+    // });
+  }
+
+  const addCartHandler = (movie) => {
+    console.log(movie);
+    setCart(oldArr => [...oldArr,
+    {
+      id: movie.id,
+      name: movie.original_title,
+      price: price,
+    }
+    ]);
+
+    console.log('cart => ', cart);
   }
 
   return (
@@ -54,17 +76,19 @@ function App() {
 
         <div className="cart">
           <img className="cart-icon" src={CartImage} />
-          <span class='badge badge-warning' id='lblCartCount'> 5 </span>
+          {cart.length > 0 && (
+            <span className='badge badge-warning' id='lblCartCount'>{cart.length}</span>
+          )}
         </div>
 
       </header>
       <div className="movie-container">
-        {movies.length > 0 && movies.map((movie) =>
+        {movies.length > 0 && movies.map((movie, i) =>
           <Movie
             key={movie.id}
-            {...movie}
-            price={price}
-            change={() => NewPrice}
+            movie={{ ...movie, price: price[i] }}
+            change={(e) => NewPriceHandler(i, e)}
+            addCart={() => addCartHandler(movie)}
           />
         )}
       </div>

@@ -13,29 +13,29 @@ const setVoteClass = (vote) => {
     }
 }
 
-function Movie({ title, poster_path, overview, vote_average, price, change }) {
+function Movie(props) {
     return (
         <div className="movie">
-            <img src={poster_path ? IMG_API + poster_path : Img} alt={title} />
+            <img src={props.movie.poster_path ? IMG_API + props.movie.poster_path : Img} alt={props.movie.title} />
 
             <div className="movie-price">
                 {/* <h3>$1000</h3> */}
                 <input
                     className="input-price"
                     type="text"
-                    value={price}
-                    onChange={change()} />
-                <span className="price-tag">Add Cart</span>
+                    value={props.movie.price}
+                    onChange={props.change} />
+                <button className="price-tag" onClick={props.addCart}>Add Cart</button>
             </div>
 
             <div className="movie-info">
-                <h3>{title}</h3>
-                <span className={`tag ${setVoteClass(vote_average)}`}>{vote_average}</span>
+                <h3>{props.movie.title}</h3>
+                <span className={`tag ${setVoteClass(props.movie.vote_average)}`}>{props.movie.vote_average}</span>
             </div>
 
             <div className="movie-overview">
                 <h2>Overview:</h2>
-                <p>{overview}</p>
+                <p>{props.movie.overview}</p>
             </div>
         </div>
     )
