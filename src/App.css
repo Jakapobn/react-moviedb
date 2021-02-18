@@ -125,6 +125,7 @@ header {
   background-color: #141414;
   padding: 0.5rem;
   margin-left: auto;
+  cursor: pointer;
 }
 
 img.cart-icon {
@@ -159,6 +160,7 @@ img.cart-icon {
   padding: 0.5rem;
   border-radius: 5px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .input-price {

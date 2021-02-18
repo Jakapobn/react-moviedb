@@ -11,11 +11,17 @@ function App() {
 
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [price, setPrice] = useState([]);
+  const [price, setPrice] = useState(0);
   const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+  const local = JSON.parse(localStorage.getItem("cart"));
+
+
 
   useEffect(async () => {
-    getMovies(MOVIE_API)
+    getMovies(MOVIE_API);
+    console.log('local => ', local)
+    setCart(local);
   }, []);
 
   const getMovies = (API) => {
@@ -36,9 +42,50 @@ function App() {
     setSearchTerm(e.target.value);
   }
 
-  const NewPriceHandler = (i, e) => {
+  const NewPriceHandler = (id, e) => {
     const newPrice = e.target.value
-    console.log(newPrice);
+    setPrice(newPrice);
+
+    // console.log(newPrice);
+    // console.log('price => ', price);
+
+
+    // if (price.length > 0) {
+
+    //   let found = price.find(val => val.id === id);
+    //   if (found) {
+    //     console.log('found => ', found);
+    //     // setPrice(item => item.find(val => val.id === found.id).map(item => found));
+    //     setPrice()
+    //   } else {
+    //     setPrice(item => [...item, { id: id, price: newPrice }])
+    //   }
+
+    // } else {
+    //   setPrice(item => [...item, { id: id, price: newPrice }])
+    // }
+
+    // price.map()
+
+    // setPrice(item => {
+    //   console.log('item.id => ', item);
+    //   console.log('id => ', id)
+
+    //   if (item.length > 0) {
+    //     return item.map(val => {
+    //       if (val.id === id) {
+    //         val.price = newPrice
+    //         return val;
+    //       } else {
+    //         return { ...item, id: id, price: newPrice }
+    //       }
+    //     })
+    //   } else {
+    //     return [...item, { id: id, price: newPrice }]
+    //   }
+    // });
+
+
     // setPrice((oldPrice, i) => {
     //   console.log(oldPrice);
     //   if (i === i) {
@@ -49,17 +96,22 @@ function App() {
   }
 
   const addCartHandler = (movie) => {
-    console.log(movie);
-    setCart(oldArr => [...oldArr,
-    {
-      id: movie.id,
-      name: movie.original_title,
-      price: price,
-    }
-    ]);
+    setCart(oldArr => {
+      const newItem = [...oldArr, {
+        id: movie.id,
+        name: movie.original_title,
+        price: price,
+      }];
 
-    console.log('cart => ', cart);
+      window.localStorage.setItem("cart", JSON.stringify(newItem));
+      return newItem;
+    });
   }
+
+  const onShowCart = () => {
+    setShowCart(!showCart)
+  }
+
 
   return (
     <>
@@ -77,9 +129,19 @@ function App() {
         <div className="cart">
           <img className="cart-icon" src={CartImage} />
           {cart.length > 0 && (
-            <span className='badge badge-warning' id='lblCartCount'>{cart.length}</span>
+            <span className='badge badge-warning' id='lblCartCount' onClick={onShowCart}>{cart.length}</span>
           )}
         </div>
+
+        {/* {showCart == true && (
+          <div className="cart-detail">
+            {
+              cart.map((val) => {
+                <div>123123</div>
+              })
+            }
+          </div>
+        )} */}
 
       </header>
       <div className="movie-container">
@@ -87,7 +149,7 @@ function App() {
           <Movie
             key={movie.id}
             movie={{ ...movie, price: price[i] }}
-            change={(e) => NewPriceHandler(i, e)}
+            change={(e) => NewPriceHandler(movie.id, e)}
             addCart={() => addCartHandler(movie)}
           />
         )}
