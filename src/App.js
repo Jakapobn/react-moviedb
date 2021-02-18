@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 import Movie from './components/Movie';
+import CartImage from './images/cart-icon.png';
 
 const MOVIE_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query=a'
 const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query='
@@ -10,6 +11,7 @@ function App() {
 
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [price, setPrice] = useState(0);
 
   useEffect(async () => {
     getMovies(MOVIE_API)
@@ -33,6 +35,10 @@ function App() {
     setSearchTerm(e.target.value);
   }
 
+  const NewPrice = (e) => {
+    setPrice(e.target.value);
+  }
+
   return (
     <>
       <header>
@@ -42,12 +48,24 @@ function App() {
             type="search"
             placeholder="Search..."
             value={searchTerm}
-            onChange={handleOnChange} />
+            onChange={handleOnChange}
+          />
         </form>
+
+        <div className="cart">
+          <img className="cart-icon" src={CartImage} />
+          <span class='badge badge-warning' id='lblCartCount'> 5 </span>
+        </div>
+
       </header>
       <div className="movie-container">
         {movies.length > 0 && movies.map((movie) =>
-          <Movie key={movie.id} {...movie} />
+          <Movie
+            key={movie.id}
+            {...movie}
+            price={price}
+            change={() => NewPrice}
+          />
         )}
       </div>
     </>
