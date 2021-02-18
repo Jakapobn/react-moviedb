@@ -4,7 +4,7 @@
 
 In the project directory, you can run:
 
-### `npm Install`
+### `npm install`
 
 Install Module
 ### `npm start`

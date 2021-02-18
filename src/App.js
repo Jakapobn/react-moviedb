@@ -7,12 +7,49 @@ import CartImage from './images/cart-icon.png';
 const MOVIE_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query=a'
 const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query='
 
+
+function Search({ searchTerm, cart, showCart, handleOnChange, handleOnSubmit, openCart }) {
+  return (
+    <header>
+      <form onSubmit={handleOnSubmit}>
+        <input
+          className="search"
+          type="search"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={e => handleOnChange(e.target.value)}
+        />
+      </form>
+
+      <div className="cart" onClick={openCart}>
+        <img className="cart-icon" src={CartImage} />
+        {cart && cart.length > 0 && (
+          <span className='badge badge-warning' id='lblCartCount'>{cart.length}</span>
+        )}
+      </div>
+
+      {/* {showCart && (
+        <div className="cart-detail">
+          <div>123123</div>
+        </div>
+      )} */}
+
+    </header>
+  );
+}
+
 function App() {
 
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [price, setPrice] = useState(0);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState([
+    {
+      id: 529203,
+      name: 'The Croods: A New Age',
+      price: '500',
+    }
+  ]);
   const [showCart, setShowCart] = useState(false);
   const local = JSON.parse(localStorage.getItem("cart"));
 
@@ -21,7 +58,9 @@ function App() {
   useEffect(async () => {
     getMovies(MOVIE_API);
     console.log('local => ', local)
-    setCart(local);
+    if (local && local.length > 0) {
+      setCart(local);
+    }
   }, []);
 
   const getMovies = (API) => {
@@ -38,64 +77,18 @@ function App() {
     }
   }
 
-  const handleOnChange = (e) => {
-    setSearchTerm(e.target.value);
+  const handleOnChange = (value) => {
+    setSearchTerm(value);
   }
 
-  const NewPriceHandler = (id, e) => {
-    const newPrice = e.target.value
-    setPrice(newPrice);
-
-    // console.log(newPrice);
-    // console.log('price => ', price);
-
-
-    // if (price.length > 0) {
-
-    //   let found = price.find(val => val.id === id);
-    //   if (found) {
-    //     console.log('found => ', found);
-    //     // setPrice(item => item.find(val => val.id === found.id).map(item => found));
-    //     setPrice()
-    //   } else {
-    //     setPrice(item => [...item, { id: id, price: newPrice }])
-    //   }
-
-    // } else {
-    //   setPrice(item => [...item, { id: id, price: newPrice }])
-    // }
-
-    // price.map()
-
-    // setPrice(item => {
-    //   console.log('item.id => ', item);
-    //   console.log('id => ', id)
-
-    //   if (item.length > 0) {
-    //     return item.map(val => {
-    //       if (val.id === id) {
-    //         val.price = newPrice
-    //         return val;
-    //       } else {
-    //         return { ...item, id: id, price: newPrice }
-    //       }
-    //     })
-    //   } else {
-    //     return [...item, { id: id, price: newPrice }]
-    //   }
-    // });
-
-
-    // setPrice((oldPrice, i) => {
-    //   console.log(oldPrice);
-    //   if (i === i) {
-    //     console.log(newPrice);
-    //     return newPrice;
-    //   }
-    // });
+  const priceChangeHandler = (price, index) => {
+    const newCart = [...cart];
+    newCart[index].price = price;
+    setPrice(newCart);
   }
 
   const addCartHandler = (movie) => {
+    console.log('movie => ', movie);
     setCart(oldArr => {
       const newItem = [...oldArr, {
         id: movie.id,
@@ -108,49 +101,30 @@ function App() {
     });
   }
 
-  const onShowCart = () => {
+  const openCartHandler = () => {
     setShowCart(!showCart)
   }
 
 
   return (
     <>
-      <header>
-        <form onSubmit={handleOnSubmit}>
-          <input
-            className="search"
-            type="search"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={handleOnChange}
-          />
-        </form>
+      <Search
+        searchTerm={searchTerm}
+        showCart={showCart}
+        cart={cart}
+        handleOnChange={handleOnChange}
+        handleOnSubmit={handleOnSubmit}
+        openCart={openCartHandler}
+      />
 
-        <div className="cart">
-          <img className="cart-icon" src={CartImage} />
-          {cart && cart.length > 0 && (
-            <span className='badge badge-warning' id='lblCartCount' onClick={onShowCart}>{cart.length}</span>
-          )}
-        </div>
-
-        {/* {showCart == true && (
-          <div className="cart-detail">
-            {
-              cart.map((val) => {
-                <div>123123</div>
-              })
-            }
-          </div>
-        )} */}
-
-      </header>
       <div className="movie-container">
-        {movies.length > 0 && movies.map((movie, i) =>
+        {movies.length > 0 && movies.map((movie, index) =>
           <Movie
             key={movie.id}
-            movie={{ ...movie, price: price[i] }}
-            change={(e) => NewPriceHandler(movie.id, e)}
-            addCart={() => addCartHandler(movie)}
+            index={index}
+            movie={movie}
+            change={priceChangeHandler}
+            addCart={addCartHandler}
           />
         )}
       </div>
