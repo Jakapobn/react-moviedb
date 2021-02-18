@@ -128,7 +128,7 @@ function App() {
 
         <div className="cart">
           <img className="cart-icon" src={CartImage} />
-          {cart.length > 0 && (
+          {cart && cart.length > 0 && (
             <span className='badge badge-warning' id='lblCartCount' onClick={onShowCart}>{cart.length}</span>
           )}
         </div>
