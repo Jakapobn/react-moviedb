@@ -12,6 +12,24 @@ const MOVIE_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f2519
 const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query='
 
 function MyModal({ cart, showCart, clearCart, handleClose }) {
+
+  const sumTotalPrice = (cart) => {
+    let sum = 0;
+    cart.map(val => sum += +val.price)
+    if (cart.length >= 3 && cart.length < 5) {
+      return sum - (sum * 10 / 100);
+    } else if (cart.length >= 5) {
+      return sum - (sum * 20 / 100);
+    }
+    return sum;
+  }
+
+  const sumDiscount = (cart, discount) => {
+    let sum = 0;
+    cart.map(val => sum += +val.price)
+    return sum * discount / 100
+  }
+
   return (
     <Modal show={showCart} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -23,8 +41,26 @@ function MyModal({ cart, showCart, clearCart, handleClose }) {
             <span className="modal-name">{i + 1}. {val.name}</span>
             <span className="modal-price">100</span>
           </div>
-
         ))}
+
+        {cart.length >= 3 && cart.length < 5 && (
+          <div className="my-modal-content">
+            <div className="modal-name discount">Buy more than 3 pieces, get 10% discount.</div>
+            <div className="modal-price discount">- {sumDiscount(cart, 10)}</div>
+          </div>
+        )}
+
+        {cart.length >= 5 && (
+          <div className="my-modal-content">
+            <div className="modal-name discount">Buy more than 5 pieces, get 20% discount.</div>
+            <div className="modal-price discount">- {sumDiscount(cart, 20)}</div>
+          </div>
+        )}
+
+        <div className="sumTotalPrice">
+          {sumTotalPrice(cart)}
+        </div>
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
@@ -113,8 +149,8 @@ function App() {
 
   const priceChangeHandler = (price, index) => {
     const newCart = [...cart];
-    newCart[index].price = price;
-    setPrice(newCart);
+    newCart[index] ? newCart[index].price = price : newCart.push({ id: '', name: '', price: price });
+    setCart(newCart);
   }
 
   const addCartHandler = (movie) => {
@@ -162,6 +198,7 @@ function App() {
             key={movie.id}
             index={index}
             movie={movie}
+            cart={cart[index]}
             change={priceChangeHandler}
             addCart={addCartHandler}
           />

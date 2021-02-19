@@ -23,7 +23,7 @@ function Movie(props) {
                 <input
                     className="input-price"
                     type="text"
-
+                    value={props.cart ? props.cart.price : 0}
                     onChange={e => props.change(e.target.value, props.index)} />
                 <span className="price-tag" onClick={() => props.addCart(props.movie)}>Add Cart</span>
             </div>

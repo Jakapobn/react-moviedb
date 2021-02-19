@@ -195,3 +195,15 @@ img.cart-icon {
   display: flex;
   justify-content: space-between;
 }
+
+.discount {
+  color: red;
+  font-weight: bold;
+}
+
+.sumTotalPrice {
+  text-align: right;
+  color: green;
+  font-weight: bold;
+  font-size: x-large;
+}
