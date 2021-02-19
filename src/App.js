@@ -6,12 +6,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import Movie from './components/Movie';
+import Payment from './components/Payment';
 import CartImage from './images/cart-icon.png';
 
 const MOVIE_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query=a'
 const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query='
 
-function MyModal({ cart, showCart, clearCart, handleClose }) {
+function CartModal({ cart, showCart, clearCart, handleClose, handleShowPayment }) {
 
   const sumTotalPrice = (cart) => {
     let sum = 0;
@@ -39,7 +40,7 @@ function MyModal({ cart, showCart, clearCart, handleClose }) {
         {cart.map((val, i) => (
           <div key={i} className="my-modal-content">
             <span className="modal-name">{i + 1}. {val.name}</span>
-            <span className="modal-price">100</span>
+            <span className="modal-price">{val.price}</span>
           </div>
         ))}
 
@@ -66,11 +67,33 @@ function MyModal({ cart, showCart, clearCart, handleClose }) {
         <Button variant="secondary" onClick={handleClose}>
           Close
           </Button>
-        <Button variant="success" onClick={handleClose}>
+        <Button variant="success" onClick={handleShowPayment}>
           Pay
           </Button>
         <Button variant="danger" onClick={clearCart}>
           Clear
+          </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+function PaymentModal({ showPayment, handleClosePayment }) {
+
+  return (
+    <Modal show={showPayment} onHide={handleClosePayment}>
+      <Modal.Header closeButton>
+        <Modal.Title>Payment</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div>
+          <Payment />
+        </div>
+
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="success" onClick={handleClosePayment}>
+          OK
           </Button>
       </Modal.Footer>
     </Modal>
@@ -98,7 +121,7 @@ function Search(props) {
       </div>
       {props.cart.length > 0 && (
         <div>
-          <MyModal cart={props.cart} showCart={props.showCart} clearCart={props.clearCart} handleClose={props.handleClose} />
+          <CartModal cart={props.cart} showCart={props.showCart} clearCart={props.clearCart} handleClose={props.handleClose} handleShowPayment={props.handleShowPayment} />
         </div>
       )}
 
@@ -110,15 +133,10 @@ function App() {
 
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [price, setPrice] = useState(0);
-  const [cart, setCart] = useState([
-    {
-      id: 529203,
-      name: 'The Croods: A New Age',
-      price: '500',
-    }
-  ]);
+  const [price, setPrice] = useState([]);
+  const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const local = JSON.parse(localStorage.getItem("cart"));
 
   useEffect(async () => {
@@ -132,7 +150,14 @@ function App() {
   const getMovies = (API) => {
     fetch(API).then(res => res.json()).then(data => {
       setMovies(data.results);
+      setDefaultPrice(data.results.length);
     });
+  }
+
+  const setDefaultPrice = (length) => {
+    for (let i = 0; i < length; i++) {
+      setPrice(old => [...old, Math.floor(Math.random() * (499 - 100 + 100))]);
+    }
   }
 
   const handleOnSubmit = (e) => {
@@ -147,24 +172,23 @@ function App() {
     setSearchTerm(value);
   }
 
-  const priceChangeHandler = (price, index) => {
-    const newCart = [...cart];
-    newCart[index] ? newCart[index].price = price : newCart.push({ id: '', name: '', price: price });
-    setCart(newCart);
+  const priceChangeHandler = (priceInput, index) => {
+    const newPrice = [...price];
+    newPrice[index] = +priceInput;
+    console.log(newPrice[index])
+    console.log(newPrice)
+    setPrice(newPrice);
   }
 
-  const addCartHandler = (movie) => {
-    console.log('movie => ', movie);
-    setCart(oldArr => {
-      const newItem = [...oldArr, {
-        id: movie.id,
-        name: movie.original_title,
-        price: price,
-      }];
-
-      window.localStorage.setItem("cart", JSON.stringify(newItem));
-      return newItem;
+  const addCartHandler = (movie, index) => {
+    const newCart = [...cart];
+    newCart.push({
+      id: movie.id,
+      name: movie.original_title,
+      price: price[index]
     });
+    setCart(newCart);
+    window.localStorage.setItem("cart", JSON.stringify(newCart));
   }
 
   const openCartHandler = () => setShowCart(true);
@@ -172,15 +196,22 @@ function App() {
   const handleClose = () => setShowCart(false);
 
   const clearCart = () => {
-    console.log('clearCart');
     window.localStorage.clear();
     setCart([]);
     setShowCart(false);
   }
 
+  const handleShowPayment = () => {
+    setShowCart(false)
+    setShowPayment(true)
+  };
+  const handleClosePayment = () => setShowPayment(false);
 
   return (
     <>
+
+      <PaymentModal showPayment={showPayment} handleClosePayment={handleClosePayment} />
+
       <Search
         searchTerm={searchTerm}
         showCart={showCart}
@@ -190,6 +221,7 @@ function App() {
         openCart={openCartHandler}
         clearCart={clearCart}
         handleClose={handleClose}
+        handleShowPayment={handleShowPayment}
       />
 
       <div className="movie-container">
@@ -198,6 +230,7 @@ function App() {
             key={movie.id}
             index={index}
             movie={movie}
+            price={price[index]}
             cart={cart[index]}
             change={priceChangeHandler}
             addCart={addCartHandler}
