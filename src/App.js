@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import Movie from './components/Movie';
@@ -7,32 +11,60 @@ import CartImage from './images/cart-icon.png';
 const MOVIE_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query=a'
 const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=99f368f25199dd4b1f91ed36b077238d&query='
 
+function MyModal({ cart, showCart, clearCart, handleClose }) {
+  return (
+    <Modal show={showCart} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>LIST IN CART</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {cart.map((val, i) => (
+          <div key={i} className="my-modal-content">
+            <span className="modal-name">{i + 1}. {val.name}</span>
+            <span className="modal-price">100</span>
+          </div>
 
-function Search({ searchTerm, cart, showCart, handleOnChange, handleOnSubmit, openCart }) {
+        ))}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+          </Button>
+        <Button variant="success" onClick={handleClose}>
+          Pay
+          </Button>
+        <Button variant="danger" onClick={clearCart}>
+          Clear
+          </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+function Search(props) {
   return (
     <header>
-      <form onSubmit={handleOnSubmit}>
+      <form onSubmit={props.handleOnSubmit}>
         <input
           className="search"
           type="search"
           placeholder="Search..."
-          value={searchTerm}
-          onChange={e => handleOnChange(e.target.value)}
+          value={props.searchTerm}
+          onChange={e => props.handleOnChange(e.target.value)}
         />
       </form>
 
-      <div className="cart" onClick={openCart}>
+      <div className="cart" onClick={props.openCart}>
         <img className="cart-icon" src={CartImage} />
-        {cart && cart.length > 0 && (
-          <span className='badge badge-warning' id='lblCartCount'>{cart.length}</span>
+        {props.cart && props.cart.length > 0 && (
+          <span className='badge badge-warning' id='lblCartCount'>{props.cart.length}</span>
         )}
       </div>
-
-      {/* {showCart && (
-        <div className="cart-detail">
-          <div>123123</div>
+      {props.cart.length > 0 && (
+        <div>
+          <MyModal cart={props.cart} showCart={props.showCart} clearCart={props.clearCart} handleClose={props.handleClose} />
         </div>
-      )} */}
+      )}
 
     </header>
   );
@@ -52,8 +84,6 @@ function App() {
   ]);
   const [showCart, setShowCart] = useState(false);
   const local = JSON.parse(localStorage.getItem("cart"));
-
-
 
   useEffect(async () => {
     getMovies(MOVIE_API);
@@ -101,8 +131,15 @@ function App() {
     });
   }
 
-  const openCartHandler = () => {
-    setShowCart(!showCart)
+  const openCartHandler = () => setShowCart(true);
+
+  const handleClose = () => setShowCart(false);
+
+  const clearCart = () => {
+    console.log('clearCart');
+    window.localStorage.clear();
+    setCart([]);
+    setShowCart(false);
   }
 
 
@@ -115,6 +152,8 @@ function App() {
         handleOnChange={handleOnChange}
         handleOnSubmit={handleOnSubmit}
         openCart={openCartHandler}
+        clearCart={clearCart}
+        handleClose={handleClose}
       />
 
       <div className="movie-container">
