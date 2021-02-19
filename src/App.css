@@ -207,3 +207,21 @@ img.cart-icon {
   font-weight: bold;
   font-size: x-large;
 }
+
+.payment-container {
+  text-align: center;
+}
+
+.img-payment {
+  width: 80%;
+}
+
+.timer {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.sum-payment {
+  font-weight: bold;
+  color: green;
+}

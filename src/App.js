@@ -18,11 +18,15 @@ function CartModal({ cart, showCart, clearCart, handleClose, handleShowPayment }
     let sum = 0;
     cart.map(val => sum += +val.price)
     if (cart.length >= 3 && cart.length < 5) {
+      window.localStorage.setItem("totalPrice", JSON.stringify(sum - (sum * 10 / 100)));
       return sum - (sum * 10 / 100);
     } else if (cart.length >= 5) {
+      window.localStorage.setItem("totalPrice", JSON.stringify(sum - (sum * 20 / 100)));
       return sum - (sum * 20 / 100);
     }
+    window.localStorage.setItem("totalPrice", JSON.stringify(sum));
     return sum;
+
   }
 
   const sumDiscount = (cart, discount) => {
@@ -83,7 +87,7 @@ function PaymentModal({ showPayment, handleClosePayment }) {
   return (
     <Modal show={showPayment} onHide={handleClosePayment}>
       <Modal.Header closeButton>
-        <Modal.Title>Payment</Modal.Title>
+        <Modal.Title>QR Promtpay</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
